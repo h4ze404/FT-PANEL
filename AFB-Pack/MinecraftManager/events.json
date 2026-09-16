@@ -1,0 +1,252 @@
+[
+  {
+    "ts": 1789588533217,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 20048]",
+    "type": "start"
+  },
+  {
+    "ts": 1789588530012,
+    "text": "Запуск игры из панели: journalctl [PID 20048]",
+    "type": "start"
+  },
+  {
+    "ts": 1789588526494,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789588418480,
+    "text": "Процесс 14384 остановлен по команде",
+    "type": "kill"
+  },
+  {
+    "ts": 1789588330924,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 14384]",
+    "type": "start"
+  },
+  {
+    "ts": 1789588330606,
+    "text": "Запуск игры из панели: journalctl [PID 14384]",
+    "type": "start"
+  },
+  {
+    "ts": 1789588327264,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789588236850,
+    "text": "Процесс 18984 остановлен по команде",
+    "type": "kill"
+  },
+  {
+    "ts": 1789587907164,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 18984]",
+    "type": "start"
+  },
+  {
+    "ts": 1789587906717,
+    "text": "Запуск игры из панели: journalctl [PID 18984]",
+    "type": "start"
+  },
+  {
+    "ts": 1789587903524,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789587864111,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789587118034,
+    "text": "Процесс 12804 остановлен по команде",
+    "type": "kill"
+  },
+  {
+    "ts": 1789586917915,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 12804]",
+    "type": "start"
+  },
+  {
+    "ts": 1789586917150,
+    "text": "Запуск игры из панели: journalctl [PID 12804]",
+    "type": "start"
+  },
+  {
+    "ts": 1789586914271,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789586494207,
+    "text": "Процесс 16512 остановлен по команде",
+    "type": "kill"
+  },
+  {
+    "ts": 1789586170630,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 16512]",
+    "type": "start"
+  },
+  {
+    "ts": 1789586170257,
+    "text": "Запуск игры из панели: journalctl [PID 16512]",
+    "type": "start"
+  },
+  {
+    "ts": 1789586160988,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789585240422,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789585066759,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789584772106,
+    "text": "Остановлен: WerdenSquad5 (TLauncher) [PID 10840]",
+    "type": "stop"
+  },
+  {
+    "ts": 1789584772106,
+    "text": "Остановлен: WerdenSquad4 (TLauncher) [PID 14904]",
+    "type": "stop"
+  },
+  {
+    "ts": 1789584772106,
+    "text": "Остановлен: WerdenSquad3 (TLauncher) [PID 19868]",
+    "type": "stop"
+  },
+  {
+    "ts": 1789584772105,
+    "text": "Остановлен: WerdenSquad2 (TLauncher) [PID 20956]",
+    "type": "stop"
+  },
+  {
+    "ts": 1789584735263,
+    "text": "Запущен Minecraft: WerdenSquad5 (TLauncher) (1.6.84) [PID 10840]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584735262,
+    "text": "Запущен Minecraft: WerdenSquad4 (TLauncher) (1.6.84) [PID 14904]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584726195,
+    "text": "Запуск игры из панели: WerdenSquad5 [PID 10840]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584722177,
+    "text": "Запуск игры из панели: WerdenSquad4 [PID 14904]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584721006,
+    "text": "Запущен Minecraft: WerdenSquad3 (TLauncher) (1.6.84) [PID 19868]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584720641,
+    "text": "Запуск игры из панели: WerdenSquad3 [PID 19868]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584690914,
+    "text": "Запущен Minecraft: WerdenSquad2 (TLauncher) (1.6.84) [PID 20956]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584688836,
+    "text": "Запуск игры из панели: WerdenSquad2 [PID 20956]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584501523,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 15236]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584500643,
+    "text": "Запуск игры из панели: journalctl [PID 15236]",
+    "type": "start"
+  },
+  {
+    "ts": 1789584497729,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789583025541,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 4036]",
+    "type": "start"
+  },
+  {
+    "ts": 1789583023446,
+    "text": "Запуск игры из панели: journalctl [PID 4036]",
+    "type": "start"
+  },
+  {
+    "ts": 1789583018866,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789582710746,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789582390052,
+    "text": "Остановлен: journalctl (TLauncher) [PID 7528]",
+    "type": "stop"
+  },
+  {
+    "ts": 1789582390051,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 11696]",
+    "type": "start"
+  },
+  {
+    "ts": 1789582387787,
+    "text": "Запуск игры из панели: journalctl [PID 11696]",
+    "type": "start"
+  },
+  {
+    "ts": 1789582385747,
+    "text": "Процесс 7528 остановлен по команде",
+    "type": "kill"
+  },
+  {
+    "ts": 1789582347906,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 7528]",
+    "type": "start"
+  },
+  {
+    "ts": 1789582347051,
+    "text": "Запуск игры из панели: journalctl [PID 7528]",
+    "type": "start"
+  },
+  {
+    "ts": 1789582344275,
+    "text": "Сервер панели запущен",
+    "type": "info"
+  },
+  {
+    "ts": 1789582081682,
+    "text": "Процесс 20056 остановлен по команде",
+    "type": "kill"
+  },
+  {
+    "ts": 1789581949714,
+    "text": "Запущен Minecraft: journalctl (TLauncher) (1.6.84) [PID 20056]",
+    "type": "start"
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "afbaritone",
+  "version": "${version}",
+  "name": "AFBaritone (AutoFish + Baritone)",
+  "description": "Auto-fishing with Baritone integration: walks to a configured goal, finds nearest water, casts the rod and reels in automatically.",
+  "authors": [],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "ru.afbaritone.AFBaritoneClient"
+    ]
+  },
+  "mixins": [
+    "afbaritone.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  },
+  "suggests": {
+    "baritone": "*"
+  }
+}
