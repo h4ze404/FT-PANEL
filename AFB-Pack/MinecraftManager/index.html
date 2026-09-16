@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minecraft Manager</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --panel2: #1c2330; --border: #2d333b;
+    --text: #e6edf3; --muted: #8b949e; --accent: #4ade80; --accent2: #60a5fa;
+    --danger: #f87171; --warn: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  h1 { font-size: 26px; display: flex; align-items: center; gap: 12px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); display: inline-block; transition: background .3s; }
+  .dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .btn {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: .15s;
+  }
+  .btn:hover { border-color: var(--accent2); }
+  .btn.danger { border-color: var(--danger); color: var(--danger); }
+  .btn.danger:hover { background: var(--danger); color: #fff; }
+  .btn.primary { border-color: var(--accent); color: var(--accent); }
+  .btn.primary:hover { background: var(--accent); color: #0d1117; }
+  .btn.small { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; }
+  .stat .val { font-size: 26px; font-weight: 700; }
+  .stat .lbl { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+  .stat .val.green { color: var(--accent); } .stat .val.blue { color: var(--accent2); } .stat .val.yellow { color: var(--warn); }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+  .panel h2 { font-size: 15px; margin-bottom: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+  input[type=text], input[type=number] {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 8px; font-size: 14px; outline: none;
+  }
+  input:focus { border-color: var(--accent2); }
+  input::placeholder { color: #556; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 20px; padding: 4px 6px 4px 12px; font-size: 13px;
+  }
+  .chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 4px; }
+  .chip button:hover { color: var(--danger); }
+  .chip .use { color: var(--accent2); cursor: pointer; }
+  .chip .use:hover { text-decoration: underline; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: #3d4450; }
+  .card-name { font-size: 17px; font-weight: 600; }
+  .badge {
+    display: inline-block; background: var(--panel2); border: 1px solid var(--border); color: var(--accent2);
+    font-size: 11px; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle;
+  }
+  .badge.green { color: var(--accent); }
+  .card-meta { color: var(--muted); font-size: 12px; }
+  .metric { margin: 8px 0; }
+  .metric-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+  .metric-row span:last-child { font-weight: 600; }
+  .bar { height: 6px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 4px; transition: width .5s; }
+  .bar .cpu { background: linear-gradient(90deg, var(--warn), #f59e0b); }
+  .bar .ram { background: linear-gradient(90deg, var(--accent2), #3b82f6); }
+  .card-actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .empty {
+    grid-column: 1/-1; text-align: center; color: var(--muted); padding: 32px 20px;
+    border: 1px dashed var(--border); border-radius: 14px; font-size: 15px;
+  }
+  .pos { font-family: Consolas, monospace; font-size: 13px; color: var(--accent2); }
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .cmd-result { font-size: 12px; margin-top: 8px; color: var(--muted); min-height: 16px; }
+  .coords-list { margin-top: 10px; }
+  .coord-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+  }
+  .coord-item .go { color: var(--accent); cursor: pointer; }
+  .coord-item .go:hover { text-decoration: underline; }
+  .coord-item .del { color: var(--muted); cursor: pointer; background: none; border: none; font-size: 14px; }
+  .coord-item .del:hover { color: var(--danger); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+  canvas { width: 100%; height: 160px; display: block; }
+  .log { max-height: 180px; overflow-y: auto; font-size: 13px; }
+  .log-item { padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
+  .log-time { color: var(--muted); flex-shrink: 0; font-family: Consolas, monospace; font-size: 12px; }
+  .log-start { color: var(--accent); } .log-stop { color: var(--warn); } .log-kill { color: var(--danger); } .log-info { color: var(--accent2); }
+  .empty-log { color: var(--muted); text-align: center; padding: 20px; }
+  select {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 8px; font-size: 14px; outline: none;
+  }
+  .inv-grid, .screen-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-top: 6px; }
+  .screen-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; max-height: 480px; overflow-y: auto; padding: 2px; }
+  .inv-slot {
+    position: relative; background: var(--panel2); border: 1px solid var(--border); border-radius: 6px;
+    height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    font-size: 10px; overflow: hidden; transition: border-color .15s;
+  }
+  .inv-slot.big {
+    height: auto; min-height: 96px; flex-direction: column; align-items: stretch;
+    padding: 8px 8px 6px; font-size: 11px; gap: 4px;
+  }
+  .inv-slot.big:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .inv-slot.big .nm {
+    font-weight: 600; color: var(--text); line-height: 1.25;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    word-break: break-word; min-height: 27px;
+  }
+  .inv-slot.big .price {
+    color: var(--warn); font-size: 10px; line-height: 1.2; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; margin-top: auto;
+  }
+  .inv-slot.big .qty { color: var(--muted); font-size: 10px; }
+  .inv-slot.big.hidden { display: none; }
+  #tt {
+    position: fixed; z-index: 999; display: none; pointer-events: none;
+    background: rgba(10, 10, 16, 0.95); border: 1px solid var(--accent2); border-radius: 8px;
+    padding: 8px 12px; max-width: 320px; font-size: 12px; color: var(--text);
+    box-shadow: 0 4px 20px rgba(0,0,0,.6);
+  }
+  #tt .tt-name { font-weight: 700; margin-bottom: 4px; color: var(--accent2); }
+  #tt .tt-lore { color: #a8b2c0; white-space: pre-line; line-height: 1.4; }
+  .inv-slot:hover { border-color: var(--accent2); }
+  .inv-slot.sel { border-color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .inv-slot .ic { color: var(--text); text-align: center; line-height: 1.1; padding: 2px; word-break: break-all; max-height: 100%; overflow: hidden; }
+  .inv-slot .empty-c { color: #333; }
+  .inv-slot b { position: absolute; top: 1px; right: 3px; font-size: 10px; color: var(--warn); }
+  .inv-slot .sn { position: absolute; bottom: 0; left: 3px; font-size: 8px; color: var(--muted); }
+  .inv-slot .dx {
+    position: absolute; top: 0; right: 0; background: none; border: none; color: var(--muted);
+    font-size: 9px; cursor: pointer; padding: 1px 3px;
+  }
+  .inv-slot .dx:hover { color: var(--danger); }
+  .inv-slot .mv {
+    position: absolute; top: 0; right: 0; background: none; border: none; color: var(--accent2);
+    font-size: 10px; cursor: pointer; padding: 1px 3px;
+  }
+  .inv-slot .mv:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1><span class="dot" id="connDot"></span> Minecraft Manager</h1>
+      <div class="subtitle">localhost:8123 · обновление каждые 3 с</div>
+    </div>
+    <button class="btn danger" id="killAllBtn">Остановить все</button>
+  </header>
+
+  <div class="stats-row">
+    <div class="stat"><div class="val green" id="stCount">0</div><div class="lbl">Запущено игр</div></div>
+    <div class="stat"><div class="val blue" id="stRam">0 МБ</div><div class="lbl">Всего RAM</div></div>
+    <div class="stat"><div class="val yellow" id="stCpu">0%</div><div class="lbl">Всего CPU</div></div>
+    <div class="stat"><div class="val" id="stCores">—</div><div class="lbl">Ядер CPU</div></div>
+  </div>
+
+  <!-- Запуск игры -->
+  <div class="panel">
+    <h2>Запуск игры</h2>
+    <div class="row">
+      <input type="text" id="nickInput" placeholder="Никнейм" maxlength="16" style="width: 200px;">
+      <button class="btn primary" onclick="launchGame()">Запустить Minecraft</button>
+      <button class="btn" onclick="saveNickname()">Сохранить ник</button>
+    </div>
+    <div class="chips" id="nickChips"></div>
+    <div class="cmd-result" id="launchResult"></div>
+  </div>
+
+  <!-- Игры с модом: управление -->
+  <div class="grid" id="modCards"></div>
+
+  <!-- Процессы -->
+  <div class="grid" id="cards"></div>
+
+  <!-- Ходьба по координатам -->
+  <div class="panel" id="gotoPanel" style="display:none;">
+    <h2>Ходьба по координатам (Baritone)</h2>
+    <div class="row">
+      <select id="modSelect" style="width: 220px;"></select>
+      <input type="number" id="goX" placeholder="X" style="width: 90px;">
+      <input type="number" id="goY" placeholder="Y" style="width: 90px;">
+      <input type="number" id="goZ" placeholder="Z" style="width: 90px;">
+      <button class="btn primary" onclick="gotoCoords()">Идти</button>
+      <button class="btn danger" onclick="stopBaritone()">Стоп</button>
+      <input type="text" id="coordName" placeholder="Название точки" style="width: 160px;">
+      <button class="btn" onclick="saveCoord()">Сохранить точку</button>
+    </div>
+    <div class="cmd-result" id="gotoResult"></div>
+    <div class="coords-list" id="coordsList"></div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:16px;">
+    <div class="panel">
+      <h2>Память (МБ)</h2>
+      <canvas id="ramChart" width="600" height="160"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Процессор (%)</h2>
+      <canvas id="cpuChart" width="600" height="160"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Журнал событий</h2>
+    <div class="log" id="log"><div class="empty-log">Пока пусто</div></div>
+  </div>
+</div>
+
+<script>
+// Запрет контекстного меню браузера (ПКМ работает только внутри панели)
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// ПКМ по слоту открытого экрана (аукцион и т.п.) = правый клик в игре
+document.addEventListener('contextmenu', e => {
+  const slot = e.target.closest && e.target.closest('.screen-grid .inv-slot');
+  if (slot && slot.onclick) {
+    e.preventDefault();
+    slot.onclick();
+  }
+});
+
+const $ = id => document.getElementById(id);
+let nicknames = [], coords = [], mods = [];
+let selectedPort = null;
+let hoverSlotInfo = null;
+
+// Тултип с названием и лором предмета
+const tt = document.createElement('div');
+tt.id = 'tt';
+document.body.appendChild(tt);
+
+document.addEventListener('mousemove', e => {
+  const slot = e.target.closest && e.target.closest('.inv-slot.big');
+  if (slot) {
+    const name = slot.dataset.name || '';
+    const lore = slot.dataset.lore || '';
+    hoverSlotInfo = name;
+    tt.innerHTML = `<div class="tt-name">${esc(name)}</div>` + (lore ? `<div class="tt-lore">${esc(lore)}</div>` : '');
+    tt.style.display = 'block';
+    let x = e.clientX + 14, y = e.clientY + 14;
+    const r = tt.getBoundingClientRect();
+    if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - 10;
+    if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - 10;
+    tt.style.left = x + 'px';
+    tt.style.top = y + 'px';
+  } else {
+    hoverSlotInfo = null;
+    tt.style.display = 'none';
+  }
+});
+
+async function refresh() {
+  try {
+    const r = await fetch('/api/data');
+    const d = await r.json();
+    $('connDot').classList.add('on');
+    render(d);
+  } catch (e) {
+    $('connDot').classList.remove('on');
+  }
+}
+
+async function loadNicknames() {
+  const r = await fetch('/api/nicknames');
+  nicknames = (await r.json()).nicknames || [];
+  renderNicknames();
+}
+async function loadCoords() {
+  const r = await fetch('/api/coords');
+  coords = (await r.json()).coords || [];
+  renderCoords();
+}
+
+function render(d) {
+  const list = d.instances || [];
+  mods = d.mods || [];
+  const totalRam = list.reduce((a, i) => a + i.ramMb, 0);
+  const totalCpu = list.reduce((a, i) => a + i.cpu, 0);
+
+  $('stCount').textContent = list.length;
+  $('stRam').textContent = totalRam >= 1024 ? (totalRam / 1024).toFixed(2) + ' ГБ' : totalRam + ' МБ';
+  $('stCpu').textContent = totalCpu.toFixed(1) + '%';
+  $('stCores').textContent = d.cores;
+
+  // Игры с модом (управляемые)
+  const modCards = $('modCards');
+  if (!mods.length) {
+    modCards.innerHTML = '<div class="empty">Нет игр с подключённым модом.<br>Запусти игру через панель — здесь появится управление.</div>';
+    $('gotoPanel').style.display = 'none';
+    selectedPort = null;
+  } else {
+    if (!mods.find(m => m.port === selectedPort)) selectedPort = mods[0].port;
+    $('gotoPanel').style.display = 'block';
+
+    // Сохраняем введённое пользователем, чтобы перерисовка не стирала текст
+    const saved = {};
+    document.querySelectorAll('[id^="cmd"]').forEach(inp => { saved[inp.id] = inp.value; });
+    document.querySelectorAll('[id^="an"]').forEach(sel => { saved[sel.id] = sel.value; });
+    document.querySelectorAll('[id^="scrf"]').forEach(inp => { saved[inp.id] = inp.value; });
+    document.querySelectorAll('.screen-grid').forEach(g => { saved[g.id] = g.scrollTop; });
+    const activeId = document.activeElement && document.activeElement.id;
+    const wasHover = hoverSlotInfo ? hoverSlotInfo : null;
+
+    modCards.innerHTML = mods.map(m => `
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-name">${esc(m.player || 'В меню')} <span class="badge green">мод: ${m.port}</span>${m.baritone === false ? '<span class="badge" style="color:var(--danger)">Baritone нет</span>' : ''}</div>
+            <div class="card-meta">мир: ${esc(m.world || '—')} · ❤ ${m.health ?? '—'} · 🎣 ${m.hasRod ? '<span style="color:var(--accent)">удочка есть</span>' : '<span style="color:var(--danger)">удочки нет</span>'}</div>
+          </div>
+        </div>
+        <div class="pos">X ${Math.round(m.x)} · Y ${Math.round(m.y)} · Z ${Math.round(m.z)}</div>
+        <div class="metric-row" style="margin-top:6px;">
+          <span>💰 Монеты</span><span style="color:var(--warn);font-weight:700;">${m.coins >= 0 ? m.coins.toLocaleString('ru-RU') : '—'}</span>
+        </div>
+        ${m.books && m.books.length ? `<div class="divider"></div><div style="font-size:12px;color:var(--muted);">📚 Выловленные зачарованные книги:</div>
+          ${m.books.map(b => `<div style="font-size:12px;color:var(--accent2);">• ${esc(b.ench)} ×${b.count}</div>`).join('')}` : ''}
+        <div class="divider"></div>
+        <!-- Анки 200-237 -->
+        <div class="row">
+          <span style="font-size:12px;color:var(--muted);">Анка:</span>
+          <select id="an${m.port}" style="width:110px;">${Array.from({length:38},(_,i)=>200+i).map(n=>`<option value="${n}" ${saved['an'+m.port]==String(n)?'selected':''}>/an${n}</option>`).join('')}</select>
+          <button class="btn small" onclick="goAnka(${m.port})">Перейти</button>
+          <button class="btn small" onclick="doAh(${m.port})">Открыть /ah</button>
+          ${!m.player ? `<button class="btn small primary" onclick="connectSrv(${m.port})">Коннект к серверу</button>` : ''}
+        </div>
+        ${m.acErr ? `<div style="font-size:11px;color:var(--danger);margin-top:4px;">Автоконнект: ${esc(m.acErr)}</div>` : ''}
+        <div class="divider"></div>
+        <!-- Хотбар и инвентарь -->
+        <div style="font-size:12px;color:var(--muted);">Хотбар (клик — выбрать слот, ⇅ — переложить в инвентарь):</div>
+        <div class="inv-grid">
+          ${Array.from({length:9},(_,i)=>{
+            const it = m.hotbar && m.hotbar[i];
+            return `<div class="inv-slot ${m.selected===i?'sel':''}" onclick="pickSlot(${m.port},${i})" title="${it?esc(it.name):''}">${it?`<span class="ic">${esc(shortName(it.name))}</span>${it.count>1?`<b>${it.count}</b>`:''}`:'<span class="ic empty-c">·</span>'}<span class="sn">${i+1}</span>${it?'<button class="mv" onclick="event.stopPropagation();invMove('+m.port+','+i+')" title="Переложить в инвентарь">⇅</button>':''}</div>`;
+          }).join('')}
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">Инвентарь (клик — переложить в/из хотбара, ПКМ-кнопка — выбросить):</div>
+        <div class="inv-grid">
+          ${Array.from({length:27},(_,j)=>{
+            const i = j+9, it = m.inv && m.inv[j];
+            return `<div class="inv-slot" onclick="invMove(${m.port},${i})" title="${it?esc(it.name):''}">${it?`<span class="ic">${esc(shortName(it.name))}</span>${it.count>1?`<b>${it.count}</b>`:''}`:'<span class="ic empty-c">·</span>'}<button class="dx" onclick="event.stopPropagation();invDrop(${m.port},${i})">✕</button></div>`;
+          }).join('')}
+        </div>
+        <div class="card-actions" style="margin-top:8px;">
+          <button class="btn small" onclick="toggleFish(${m.port}, ${m.autofish})">${m.autofish ? 'Остановить рыбалку' : 'Авто-рыбалка'}</button>
+          <button class="btn small danger" onclick="dropItems(${m.port})">Выкинуть всё кроме удочки</button>
+          <button class="btn small" onclick="buyRod(${m.port})" ${m.buying ? 'disabled style="opacity:.5"' : ''}>${m.buying ? 'Покупаю...' : 'Купить удочку'}</button>
+          <button class="btn small" onclick="openInv(${m.port})">Открыть инвентарь</button>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+          <input type="text" id="cmd${m.port}" placeholder="Команда: /gamemode creative или #goto ..." style="flex:1; min-width: 180px;" value="${esc(saved['cmd' + m.port] || '')}">
+          <button class="btn small" onclick="sendCmd(${m.port})">Отправить</button>
+        </div>
+        <!-- Открытый экран (аукцион/бот/инвентарь) -->
+        ${m.screen ? `<div class="divider"></div>
+        <div style="font-size:13px;color:var(--muted);">Экран: <b style="color:var(--accent)">${esc(m.screen.title)}</b> — клик = клик в игре (ПКМ = правый клик), наведи мышь для полного описания:</div>
+        <div class="row" style="margin-top:8px;">
+          <input type="text" id="scrf${m.port}" placeholder="Поиск по названию или описанию..." style="flex:1; min-width:180px;" value="${esc(saved['scrf' + m.port] || '')}" oninput="filterScreen('${m.port}')">
+          <span style="font-size:12px;color:var(--muted);">Предметов: ${m.screen.slots.length}</span>
+        </div>
+        <div class="screen-grid" id="scr${m.port}">
+          ${m.screen.slots.map(s => {
+            const price = (s.lore||[]).find(l => /цена|price|\$|монет/i.test(l)) || '';
+            return `<div class="inv-slot big${saved['scrf'+m.port] && !(s.name+' '+(s.lore||[]).join(' ')).toLowerCase().includes(saved['scrf'+m.port].toLowerCase()) ? ' hidden' : ''}" onclick="gClick(${m.port},${s.id})" data-name="${esc(s.name)}" data-lore="${esc((s.lore||[]).join('\n'))}">
+              <span class="nm" title="">${esc(s.name)}</span>
+              ${s.count>1?`<span class="qty">×${s.count}</span>`:''}
+              ${price?`<span class="price">${esc(price)}</span>`:''}
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+      </div>`).join('');
+
+    // Восстанавливаем фокус и курсор в конец
+    if (activeId && document.getElementById(activeId)) {
+      const el = document.getElementById(activeId);
+      el.focus();
+      el.setSelectionRange(el.value.length, el.value.length);
+    }
+    // Восстанавливаем скролл открытых экранов
+    document.querySelectorAll('.screen-grid').forEach(g => {
+      if (saved[g.id]) g.scrollTop = saved[g.id];
+    });
+
+    const sel = $('modSelect');
+    sel.innerHTML = mods.map(m => `<option value="${m.port}" ${m.port === selectedPort ? 'selected' : ''}>${esc(m.player || 'порт ' + m.port)}</option>`).join('');
+    sel.onchange = () => selectedPort = Number(sel.value);
+  }
+
+  // Процессы
+  const cards = $('cards');
+  if (!list.length) {
+    cards.innerHTML = '';
+  } else {
+    cards.innerHTML = list.map(i => `
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-name">${esc(i.name)}${i.version ? `<span class="badge">${esc(i.version)}</span>` : ''}</div>
+            <div class="card-meta">PID ${i.pid} · работает ${fmtUp(i.upMs)}</div>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-row"><span>CPU</span><span>${i.cpu.toFixed(1)}%</span></div>
+          <div class="bar"><div class="cpu" style="width:${Math.min(100, i.cpu)}%"></div></div>
+        </div>
+        <div class="metric">
+          <div class="metric-row"><span>Память</span><span>${i.ramMb >= 1024 ? (i.ramMb / 1024).toFixed(2) + ' ГБ' : i.ramMb + ' МБ'}</span></div>
+          <div class="bar"><div class="ram" style="width:${Math.min(100, i.ramMb / 60)}%"></div></div>
+        </div>
+        <div class="card-actions">
+          <button class="btn danger small" onclick="killPid(${i.pid})">Остановить процесс</button>
+        </div>
+      </div>`).join('');
+  }
+
+  drawChart($('ramChart'), d.history.map(h => h.totalRam), '#60a5fa', 'МБ');
+  drawChart($('cpuChart'), d.history.map(h => h.totalCpu), '#fbbf24', '%');
+
+  const log = $('log');
+  if (!d.events || !d.events.length) {
+    log.innerHTML = '<div class="empty-log">Пока пусто</div>';
+  } else {
+    log.innerHTML = d.events.map(e => {
+      const t = new Date(e.ts).toLocaleTimeString('ru-RU');
+      return `<div class="log-item"><span class="log-time">${t}</span><span class="log-${e.type}">${esc(e.text)}</span></div>`;
+    }).join('');
+  }
+}
+
+function renderNicknames() {
+  const el = $('nickChips');
+  if (!nicknames.length) { el.innerHTML = '<span style="color:var(--muted);font-size:12px;">Сохранённых ников нет</span>'; return; }
+  el.innerHTML = nicknames.map(n => `
+    <span class="chip">
+      <span class="use" onclick="useNick('${esc(n)}')">${esc(n)}</span>
+      <button onclick="delNick('${esc(n)}')" title="Удалить">✕</button>
+    </span>`).join('');
+}
+
+function renderCoords() {
+  const el = $('coordsList');
+  if (!coords.length) { el.innerHTML = '<span style="color:var(--muted);font-size:12px;">Сохранённых точек нет</span>'; return; }
+  el.innerHTML = coords.map((c, i) => `
+    <div class="coord-item">
+      <span><b>${esc(c.name)}</b> <span class="pos">${c.x}, ${c.y}, ${c.z}</span></span>
+      <span>
+        <span class="go" onclick="goToSaved(${i})">Идти</span>
+        <button class="del" onclick="delCoord(${i})">✕</button>
+      </span>
+    </div>`).join('');
+}
+
+function fmtUp(ms) {
+  if (!ms || ms < 0) return '—';
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return (h ? h + ' ч ' : '') + m + ' мин ' + sec + ' с';
+}
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function drawChart(canvas, data, color, unit) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.clientWidth * 2;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  if (data.length < 2) return;
+  const max = Math.max(...data, 1) * 1.15;
+  const pad = 8;
+  const step = (W - pad * 2) / (data.length - 1);
+  ctx.strokeStyle = '#2d333b';
+  ctx.lineWidth = 1;
+  for (let i = 1; i <= 3; i++) {
+    const y = H * i / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, color + '55');
+  grad.addColorStop(1, color + '00');
+  ctx.beginPath();
+  ctx.moveTo(pad, H - (data[0] / max) * (H - pad) - pad);
+  data.forEach((v, i) => {
+    const x = pad + i * step;
+    const y = H - (v / max) * (H - pad) - pad;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad + (data.length - 1) * step, H);
+  ctx.lineTo(pad, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const x = pad + i * step;
+    const y = H - (v / max) * (H - pad) - pad;
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  const last = data[data.length - 1];
+  ctx.fillStyle = color;
+  ctx.font = 'bold 24px Segoe UI';
+  ctx.fillText(`${last}${unit === 'МБ' ? ' МБ' : '%'}`, pad + 6, 30);
+}
+
+// ---------- Действия ----------
+async function api(path, method, body) {
+  const r = await fetch(path, {
+    method: method || 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  return r.json();
+}
+
+async function launchGame() {
+  const nick = $('nickInput').value.trim();
+  if (!nick) { $('launchResult').textContent = 'Введи никнейм'; return; }
+  const res = await api('/api/launch', 'POST', { nick });
+  $('launchResult').textContent = res.error ? 'Ошибка: ' + res.error : res.result;
+  $('launchResult').style.color = res.error ? 'var(--danger)' : 'var(--accent)';
+}
+
+async function saveNickname() {
+  const nick = $('nickInput').value.trim();
+  if (!nick) return;
+  const res = await api('/api/nicknames', 'POST', { nick });
+  nicknames = res.nicknames || nicknames;
+  renderNicknames();
+}
+function useNick(n) { $('nickInput').value = n; }
+async function delNick(n) {
+  const res = await api('/api/nicknames', 'DELETE', { nick: n });
+  nicknames = res.nicknames || [];
+  renderNicknames();
+}
+
+async function sendCmd(port) {
+  const input = $('cmd' + port);
+  if (!input.value.trim()) return;
+  const res = await api('/api/mod', 'POST', { port, action: 'cmd', payload: { command: input.value.trim() } });
+  input.value = '';
+  if (res.error) alert('Ошибка: ' + res.error);
+}
+
+async function dropItems(port) {
+  if (!confirm('Выкинуть ВСЕ предметы кроме удочки (книги тоже выкинутся)?')) return;
+  const res = await api('/api/mod', 'POST', { port, action: 'drop', payload: { keepBooks: false } });
+  if (res.error) alert('Ошибка: ' + res.error);
+}
+
+async function buyRod(port) {
+  const res = await api('/api/mod', 'POST', { port, action: 'buyrod', payload: {} });
+  if (res.error) alert('Ошибка: ' + res.error);
+}
+
+function shortName(n) {
+  if (!n) return '';
+  const words = n.split(' ');
+  return words.length > 1 ? words.map(w => w.slice(0, 4)).join(' ') : (n.length > 10 ? n.slice(0, 10) : n);
+}
+
+async function goAnka(port) {
+  const n = document.getElementById('an' + port).value;
+  const res = await api('/api/mod', 'POST', { port, action: 'cmd', payload: { command: '/an' + n } });
+  if (res.error) alert('Ошибка: ' + res.error);
+}
+async function doAh(port) {
+  const res = await api('/api/mod', 'POST', { port, action: 'cmd', payload: { command: '/ah' } });
+  if (res.error) alert('Ошибка: ' + res.error);
+}
+async function connectSrv(port) {
+  await api('/api/mod', 'POST', { port, action: 'connect', payload: {} });
+  setTimeout(refresh, 1500);
+}
+
+function filterScreen(port) {
+  const q = (document.getElementById('scrf' + port).value || '').toLowerCase();
+  const grid = document.getElementById('scr' + port);
+  if (!grid) return;
+  grid.querySelectorAll('.inv-slot.big').forEach(el => {
+    const text = ((el.dataset.name || '') + ' ' + (el.dataset.lore || '')).toLowerCase();
+    el.classList.toggle('hidden', q && !text.includes(q));
+  });
+}
+async function pickSlot(port, i) {
+  await api('/api/mod', 'POST', { port, action: 'slot', payload: { slot: i } });
+  setTimeout(refresh, 300);
+}
+async function invMove(port, i) {
+  await api('/api/mod', 'POST', { port, action: 'invmove', payload: { slot: i } });
+  setTimeout(refresh, 400);
+}
+async function invDrop(port, i) {
+  if (!confirm('Выбросить предмет из слота ' + (i + 1) + '?')) return;
+  await api('/api/mod', 'POST', { port, action: 'invdrop', payload: { slot: i } });
+  setTimeout(refresh, 400);
+}
+async function openInv(port) {
+  await api('/api/mod', 'POST', { port, action: 'openinv', payload: {} });
+  setTimeout(refresh, 400);
+}
+async function gClick(port, slotId) {
+  await api('/api/mod', 'POST', { port, action: 'gclick', payload: { slot: slotId } });
+  setTimeout(refresh, 400);
+}
+
+async function toggleFish(port, enabled) {
+  const res = await api('/api/mod', 'POST', { port, action: 'autofish', payload: { enabled: !enabled } });
+  if (res.error) alert('Ошибка: ' + res.error);
+  setTimeout(refresh, 300);
+}
+
+async function gotoCoords() {
+  const x = $('goX').value, y = $('goY').value, z = $('goZ').value;
+  if (x === '' || y === '' || z === '') { $('gotoResult').textContent = 'Заполни X, Y, Z'; return; }
+  const res = await api('/api/mod', 'POST', { port: selectedPort, action: 'goto', payload: { x: +x, y: +y, z: +z } });
+  $('gotoResult').textContent = res.error ? 'Ошибка: ' + res.error : 'Baritone пошёл к ' + x + ', ' + y + ', ' + z;
+  $('gotoResult').style.color = res.error ? 'var(--danger)' : 'var(--accent)';
+}
+async function stopBaritone() {
+  await api('/api/mod', 'POST', { port: selectedPort, action: 'stop', payload: {} });
+  $('gotoResult').textContent = 'Baritone остановлен';
+}
+async function saveCoord() {
+  const name = $('coordName').value.trim() || ('Точка ' + (coords.length + 1));
+  const res = await api('/api/coords', 'POST', { name, x: +$('goX').value, y: +$('goY').value, z: +$('goZ').value });
+  coords = res.coords || coords;
+  $('coordName').value = '';
+  renderCoords();
+}
+function goToSaved(i) {
+  const c = coords[i];
+  $('goX').value = c.x; $('goY').value = c.y; $('goZ').value = c.z;
+  gotoCoords();
+}
+async function delCoord(i) {
+  const res = await api('/api/coords', 'DELETE', { index: i });
+  coords = res.coords || [];
+  renderCoords();
+}
+
+async function killPid(pid) {
+  if (!confirm('Остановить процесс ' + pid + '? Игра закроется без сохранения!')) return;
+  await api('/api/kill', 'POST', { pid });
+  setTimeout(refresh, 500);
+}
+
+$('killAllBtn').onclick = async () => {
+  if (!confirm('Остановить ВСЕ запущенные Minecraft?')) return;
+  await api('/api/killall', 'POST');
+  setTimeout(refresh, 800);
+};
+
+$('nickInput').addEventListener('keydown', e => { if (e.key === 'Enter') launchGame(); });
+
+// Enter в поле команды = отправить
+$('modCards').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('cmd')) {
+    const port = Number(e.target.id.slice(3));
+    if (port) sendCmd(port);
+  }
+});
+
+refresh();
+loadNicknames();
+loadCoords();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>

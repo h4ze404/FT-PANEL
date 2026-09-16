@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "ru.afbaritone.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "FishingBobberEntityMixin",
+    "FishingBobberEntityBiteMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
