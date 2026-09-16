@@ -24,3 +24,5 @@
 nicknames.json — сохранённые ники  
 coords.json    — сохранённые координаты  
 events.json    — лог событий  
+
+  СУРСЫ: https://drive.google.com/file/d/1-UKgWpNvw90-tucjMNc1pdHj_BMvbZxd/view?usp=sharing
