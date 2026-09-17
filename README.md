@@ -8,7 +8,7 @@
   
     afbaritone-1.0.0.jar              — авторыбалка, анти-аффк, автоконнект, реконнект  
       
-    baritone-standalone-fabric-1.17.0.jar — Baritone (ходьба по координатам)  
+    baritone-standalone-fabric-1.17.0.jar — Baritone (ходьба по координатам "НЕ РЕАЛИЗОВАНО")  
       
     fabric-api-0.141.6-1.21.11.jar    — Fabric API (нужен для модов)  
       
