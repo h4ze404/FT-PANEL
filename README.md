@@ -1,16 +1,16 @@
-СОДЕРЖИМОЕ:  
+    СОДЕРЖИМОЕ:  
 
-  START.bat        — запуск веб-панели (откроется http://localhost:8123)  
+    START.bat        — запуск веб-панели (откроется http://localhost:8123)  
   
-  MinecraftManager\ — веб-панель (index.html + server.js), нужен Node.js  
+    MinecraftManager\ — веб-панель (index.html + server.js), нужен Node.js  
   
-  mods\            — моды для Minecraft 1.21.11 (Fabric):  
+    mods\            — моды для Minecraft 1.21.11 (Fabric):  
   
-  afbaritone-1.0.0.jar              — авторыбалка, анти-аффк, автоконнект, реконнект  
+    afbaritone-1.0.0.jar              — авторыбалка, анти-аффк, автоконнект, реконнект  
       
-  baritone-standalone-fabric-1.17.0.jar — Baritone (ходьба по координатам)  
+    baritone-standalone-fabric-1.17.0.jar — Baritone (ходьба по координатам)  
       
-  fabric-api-0.141.6-1.21.11.jar    — Fabric API (нужен для модов)  
+    fabric-api-0.141.6-1.21.11.jar    — Fabric API (нужен для модов)  
       
 
 КАК ЗАПУСКАТЬ:
