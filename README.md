@@ -23,7 +23,7 @@
 
 ТРЕБОВАНИЯ:
   - Node.js (https://nodejs.org, любая свежая LTS-версия)
-  - Minecraft 1.21.11 + Fabric Loader (TLauncher)
+  - Minecraft 1.21.11 + Fabric Loader (Встроен в Legacy Launcher)
   - Java идёт вместе с TLauncher
 
 БЕЗ ИНТЕРНЕТА:
