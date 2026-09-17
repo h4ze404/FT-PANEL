@@ -1,13 +1,17 @@
-AFB-Run — минимальный набор для запуска
-========================================
+СОДЕРЖИМОЕ:  
 
-СОДЕРЖИМОЕ:
-  START.bat        — запуск веб-панели (откроется http://localhost:8123)
-  MinecraftManager\ — веб-панель (index.html + server.js), нужен Node.js
-  mods\            — моды для Minecraft 1.21.11 (Fabric):
-      afbaritone-1.0.0.jar              — авторыбалка, анти-аффк, автоконнект, реконнект
-      baritone-standalone-fabric-1.17.0.jar — Baritone (ходьба по координатам)
-      fabric-api-0.141.6-1.21.11.jar    — Fabric API (нужен для модов)
+  START.bat        — запуск веб-панели (откроется http://localhost:8123)  
+  
+  MinecraftManager\ — веб-панель (index.html + server.js), нужен Node.js  
+  
+  mods\            — моды для Minecraft 1.21.11 (Fabric):  
+  
+      afbaritone-1.0.0.jar              — авторыбалка, анти-аффк, автоконнект, реконнект  
+      
+      baritone-standalone-fabric-1.17.0.jar — Baritone (ходьба по координатам)  
+      
+      fabric-api-0.141.6-1.21.11.jar    — Fabric API (нужен для модов)  
+      
 
 КАК ЗАПУСКАТЬ:
   1. Скопируй ВСЕ три файла из папки mods в папку модов игры:
